@@ -23,6 +23,9 @@ class Map(QMainWindow):
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(10, 150, 781, 401))
         self.label.setObjectName("label")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(664, 10, 121, 23))
+        self.pushButton.setObjectName("pushButton")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -41,6 +44,7 @@ class Map(QMainWindow):
         self.lineEdit.setPlaceholderText(_translate("MainWindow", "Введите координаты:"))
         self.lineEdit_2.setPlaceholderText(_translate("MainWindow", "Введите масштаб:"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
+        self.pushButton.setText(_translate("MainWindow", "Переместиться"))
 
 
 if __name__ == '__main__':
