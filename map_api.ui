@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>990</width>
     <height>600</height>
    </rect>
   </property>
@@ -51,15 +51,15 @@
      <rect>
       <x>350</x>
       <y>0</y>
-      <width>441</width>
+      <width>631</width>
       <height>551</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">border: 1px solid rgb(160, 160, 160)</string>
+     <string notr="true"/>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
@@ -72,7 +72,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">border: 1px solid rgb(160, 160, 160)</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string>Переместиться</string>
@@ -84,7 +84,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>990</width>
      <height>21</height>
     </rect>
    </property>
