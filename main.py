@@ -12,6 +12,7 @@ class Main(QMainWindow):
         uic.loadUi('map_api.ui', self)
         self.pushButton.clicked.connect(self.get_map)
         self.map_file = None
+        self.scale = 5
 
     def isEmpty(self, lineEdit: QLineEdit):
         if lineEdit.text() == '':
@@ -23,6 +24,7 @@ class Main(QMainWindow):
 
     def get_map(self):
         url_template = 'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=map'
+        self.lineEdit.setText(self.lineEdit.text().strip())
         try:
             os.remove(self.map_file)
             self.map_file = None
@@ -32,8 +34,12 @@ class Main(QMainWindow):
             spis = [','.join(self.lineEdit.text().split(' '))]
             if len(self.lineEdit_2.text().strip().split(' ')) == 1:
                 spis.append(','.join([self.lineEdit_2.text().strip(), self.lineEdit_2.text().strip()]))
+                self.scale = float(self.lineEdit_2.text().strip())
             else:
-                spis.append(','.join(self.lineEdit_2.text().strip().split(' ')))
+                max_scale = str(max(list(map(float, self.lineEdit_2.text().strip().split(' ')))))
+                self.lineEdit_2.setText(max_scale)
+                self.scale = float(max_scale)
+                spis.append(','.join([max_scale, max_scale]))
             for i in spis:
                 url_template = url_template.replace(' ', i, 1)
             response = requests.get(url_template)
@@ -54,6 +60,17 @@ class Main(QMainWindow):
 
     def keyPressEvent(self, key):
         if key.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
+            self.get_map()
+        if key.key() in [QtCore.Qt.Key_PageUp]:
+            if self.scale < 90:
+                self.scale += 1
+            self.lineEdit_2.setText(str(round(self.scale)))
+            self.get_map()
+        if key.key() in [QtCore.Qt.Key_PageDown]:
+            if self.scale > 0:
+                self.scale -= 1
+            print(self.scale)
+            self.lineEdit_2.setText(str(round(self.scale)))
             self.get_map()
 
 
