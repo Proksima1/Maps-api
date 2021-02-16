@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow
+import json
 
 
 class Main(QMainWindow):
@@ -61,6 +62,15 @@ class Main(QMainWindow):
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem2)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.lineEdit_3 = QtWidgets.QLineEdit(self.verticalLayoutWidget)
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.horizontalLayout_3.addWidget(self.lineEdit_3)
+        self.pushButton_2 = QtWidgets.QPushButton(self.verticalLayoutWidget)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.horizontalLayout_3.addWidget(self.pushButton_2)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 990, 21))
@@ -82,7 +92,10 @@ class Main(QMainWindow):
         self.radioButton_2.setText(_translate("MainWindow", "Спутник"))
         self.radioButton_3.setText(_translate("MainWindow", "Гибрид"))
         self.pushButton.setText(_translate("MainWindow", "Переместиться"))
+        self.lineEdit_3.setPlaceholderText(_translate("MainWindow", "Найти объект по названию:"))
+        self.pushButton_2.setText(_translate("MainWindow", "Искать"))
         self.pushButton.clicked.connect(self.get_map)
+        self.pushButton_2.clicked.connect(self.get_object)
         self.map_file = None
         self.position = [37.615370, 55.756936]
         self.scale = 5
@@ -95,12 +108,41 @@ class Main(QMainWindow):
             lineEdit.setStyleSheet('border: 1px solid rgb(160, 160, 160);')
         return False
 
+    def get_object(self):   
+        geocoder_request = f"http://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode=" \
+                           f"{self.lineEdit_3.text()}&format=json"
+        response = requests.get(geocoder_request)
+        if response:
+            json_response = response.json()
+            toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            toponym_coodrinates = ",".join((toponym["Point"]["pos"]).split())
+            if self.radioButton.isChecked():
+                url_template = f'http://static-maps.yandex.ru/1.x/?ll={toponym_coodrinates}&spn=0.05,0.05&l=map'
+                response = requests.get(url_template)
+            elif self.radioButton_2.isChecked():
+                url_template = f'http://static-maps.yandex.ru/1.x/?ll={toponym_coodrinates}&spn=0.05,0.05&l=sat'
+                response = requests.get(url_template)
+            elif self.radioButton_3.isChecked():
+                url_template = f'http://static-maps.yandex.ru/1.x/?ll={toponym_coodrinates}&spn=0.05,0.05&l=skl'
+                response = requests.get(url_template)
+            else:
+                url_template = f'http://static-maps.yandex.ru/1.x/?ll={toponym_coodrinates}&spn=0.05,0.05&l=map'
+                response = requests.get(url_template)
+        if not response:
+            print(f'error {response.text}')
+        else:
+            self.map_file = "map.png"
+            with open(self.map_file, "wb") as file:
+                file.write(response.content)
+        pixmap = QPixmap(self.map_file)
+        self.label.setPixmap(pixmap)
+
     def get_map(self):
         if self.radioButton.isChecked():
             url_template = f'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=map'
-        elif self.radioButton_2:
+        elif self.radioButton_2.isChecked():
             url_template = f'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=sat'
-        else:
+        elif self.radioButton_3.isChecked():
             url_template = f'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=skl'
         self.lineEdit.setText(self.lineEdit.text().strip())
         try:
@@ -157,7 +199,6 @@ class Main(QMainWindow):
             self.lineEdit.setText(' '.join(list(map(str, self.position))))
             self.get_map()
         if key.key() == QtCore.Qt.Key_Right:
-            #if int(self.position[0]) <
             self.position[0] += 0.5
             self.lineEdit.setText(' '.join(list(map(str, self.position))))
             self.get_map()
