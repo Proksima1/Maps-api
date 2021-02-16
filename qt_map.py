@@ -7,6 +7,7 @@ class Map(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        1
 
 
     def setupUi(self, MainWindow):
