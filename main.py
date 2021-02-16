@@ -3,7 +3,7 @@ import sys
 import requests
 from PyQt5 import uic, QtCore
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit, QHBoxLayout
 from modules import *
 
 
@@ -25,7 +25,7 @@ class Main(QMainWindow):
         return False
 
     def get_map(self):
-        url_template = 'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=map'
+        url_template = f'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=map'
         self.lineEdit.setText(self.lineEdit.text().strip())
         try:
             os.remove(self.map_file)
