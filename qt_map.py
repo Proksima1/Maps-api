@@ -1,6 +1,7 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow
+
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 
 class Map(QMainWindow):
@@ -8,7 +9,6 @@ class Map(QMainWindow):
         super().__init__()
         self.setupUi(self)
         1
-
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -42,14 +42,6 @@ class Map(QMainWindow):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.lineEdit.setPlaceholderText(_translate("MainWindow", "Введите координаты:"))
-        self.lineEdit_2.setPlaceholderText(_translate("MainWindow", "Введите масштаб:"))
-        self.label.setText(_translate("MainWindow", "TextLabel"))
-        self.pushButton.setText(_translate("MainWindow", "Переместиться"))
 
 
 if __name__ == '__main__':
