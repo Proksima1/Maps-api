@@ -1,10 +1,10 @@
 import os
 import sys
+
 import requests
 from PyQt5 import uic, QtCore
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLineEdit
-from modules import *
 
 
 class Main(QMainWindow):
@@ -16,14 +16,6 @@ class Main(QMainWindow):
         self.position = [37.615370, 55.756936]
         self.scale = 5
 
-    def isEmpty(self, lineEdit: QLineEdit):
-        if lineEdit.text() == '':
-            lineEdit.setStyleSheet('border: 1px solid red;')
-            return True
-        else:
-            lineEdit.setStyleSheet('border: 1px solid rgb(160, 160, 160);')
-        return False
-
     def get_map(self):
         url_template = 'http://static-maps.yandex.ru/1.x/?ll= &spn= &l=map'
         self.lineEdit.setText(self.lineEdit.text().strip())
@@ -32,10 +24,19 @@ class Main(QMainWindow):
             self.map_file = None
         except TypeError:
             pass
-        if not (self.isEmpty(self.lineEdit) and self.isEmpty(self.lineEdit_2)):
+
+        def isEmpty(lineEdit: QLineEdit):
+            """Проверка на то, что строка не пустая."""
+            if lineEdit.text() == '':
+                lineEdit.setStyleSheet('border: 1px solid red;')
+                return True
+            else:
+                lineEdit.setStyleSheet('border: 1px solid rgb(160, 160, 160);')
+            return False
+
+        if not (isEmpty(self.lineEdit) and isEmpty(self.lineEdit_2)):
             coord = [','.join(self.lineEdit.text().split(' '))]
-            self.position = coord
-            print(self.position)
+            self.position = list(map(float, self.lineEdit.text().split(' ')))
             if len(self.lineEdit_2.text().strip().split(' ')) == 1:
                 coord.append(','.join([self.lineEdit_2.text().strip(), self.lineEdit_2.text().strip()]))
                 self.scale = float(self.lineEdit_2.text().strip())
@@ -57,13 +58,22 @@ class Main(QMainWindow):
             self.label.setPixmap(pixmap)
 
     def closeEvent(self, event):
-        """"""
         try:
             os.remove(self.map_file)
         except TypeError:
             pass
 
+    def mousePressEvent(self, event):
+        focused_widget = QApplication.focusWidget()
+        if isinstance(focused_widget, QLineEdit):
+            focused_widget.clearFocus()
+        QMainWindow.mousePressEvent(self, event)
+
     def keyPressEvent(self, key):
+        """Обработка нажатия различных клавиш."""
+        focused_widget = QApplication.focusWidget()
+        if isinstance(focused_widget, QLineEdit):
+            focused_widget.clearFocus()
         if key.key() in [QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return]:
             self.get_map()
         if key.key() == QtCore.Qt.Key_PageUp:
@@ -83,9 +93,22 @@ class Main(QMainWindow):
             print(self.position)
             self.lineEdit.setText(' '.join(list(map(str, self.position))))
             self.get_map()
+        if key.key() == QtCore.Qt.Key_Down:
+            if int(self.position[1]) > -70:
+                self.position[1] -= 0.5
+            print(self.position)
+            self.lineEdit.setText(' '.join(list(map(str, self.position))))
+            self.get_map()
         if key.key() == QtCore.Qt.Key_Right:
-            #if int(self.position[0]) <
-            self.position[0] += 0.5
+            if int(self.position[0]) < 180:
+                self.position[0] += 0.5
+            print(self.position)
+            self.lineEdit.setText(' '.join(list(map(str, self.position))))
+            self.get_map()
+        if key.key() == QtCore.Qt.Key_Left:
+            if int(self.position[0]) > 0:
+                self.position[0] -= 0.5
+            print(self.position)
             self.lineEdit.setText(' '.join(list(map(str, self.position))))
             self.get_map()
 
